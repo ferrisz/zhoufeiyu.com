@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
     
-  关于我 - 飞宇的博客
+  使用二进制位标记状态 - 飞宇的博客
   
   </title>
   
@@ -130,14 +130,16 @@
       <div class="markdown-body article-wrap">
        <div class="article">
           
-          <h1>关于我</h1>
+          <h1>使用二进制位标记状态</h1>
      
         <div class="read-more clearfix">
           <span class="date">2021/09/23</span>
 
           <span>posted in&nbsp;</span> 
           
-              <span class="posted-in"><a href='%E5%85%B3%E4%BA%8E.html'>关于</a></span>
+              <span class="posted-in"><a href='Go.html'>Go</a></span>
+          
+              <span class="posted-in"><a href='%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91.html'>后端开发</a></span>
            
          
           <span class="comments">
@@ -150,18 +152,69 @@
       </div><!-- article -->
 
       <div class="article-content">
-      <p>你好，我是飞宇，最近沉迷于 Go、微服务架构及云原生这一生态圈子里的东西（努力学习中），偶尔也会从程序员的视角分享一些理财相关的东西。在工作中，目前主要负责公司的数据平台的后端开发， 欢迎大家来找我玩和讨论问题，提建议也随时欢迎。</p>
-<h2><a id="%E8%81%94%E7%B3%BB%E6%96%B9%E5%BC%8F%EF%BC%9A" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>联系方式：</h2>
-<ul>
-<li>Github：<a href="https://github.com/ferrisz">https://github.com/ferrisz</a></li>
-<li>公众号：周飞宇</li>
-<li>邮箱：<a href="mailto:feiyu.zhou@outlook.com">feiyu.zhou@outlook.com</a></li>
-</ul>
-<h2><a id="%E6%88%91%E7%9A%84%E5%85%AC%E4%BC%97%E5%8F%B7" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>我的公众号</h2>
-<p>平时计划分享 Go 语言、微服务架构和云原生相关的想法，欢迎关注我的公众号：</p>
-<center>
-<img src="https://static.zhoufeiyu.com/media/2021/09/23/qrcodeforghd339433c825d258.jpg"/>
-</center>
+      <p>笔者实战过程中经常使用到一组二进制位来标记状态，因此也就涉及到对指定位进行修改操作，代码示例使用Go来实现</p>
+<h2><a id="go%E4%BD%8D%E8%BF%90%E7%AE%97%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>Go 位运算相关知识</h2>
+<pre><code class="language-plain_text">&amp;      位运算 AND
+|      位运算 OR
+^      位运算 XOR
+&amp;^     位清空 (AND NOT)
+&lt;&lt;     左移
+&gt;&gt;     右移
+</code></pre>
+<h2><a id="%E4%BF%AE%E6%94%B9%E4%BA%8C%E8%BF%9B%E5%88%B6%E6%95%B0%E4%B8%AD%E6%8C%87%E5%AE%9A%E4%BD%8D" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>修改二进制数中指定位</h2>
+<h3><a id="%E7%A4%BA%E4%BE%8B%E4%BB%A3%E7%A0%81" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>示例代码</h3>
+<pre><code class="language-go">func ModifyStatus(status int, indexOf int, to bool) int{
+	if to{
+		return status | (1 &lt;&lt; indexOf)
+	}else{
+		return status &amp;^ (1 &lt;&lt; indexOf)
+	}
+}
+</code></pre>
+<p>代码中indexOf为从右往左数第几位</p>
+<h3><a id="%E6%B5%8B%E8%AF%95%E6%A0%B7%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>测试样例</h3>
+<pre><code class="language-go">func main() {
+	status := 0
+	fmt.Printf(&quot;%08b\n&quot;, status) //00000000
+	status = ModifyStatus(status, 0, true)
+	fmt.Printf(&quot;%08b\n&quot;, status) //00000001
+	status = ModifyStatus(status, 0, false)
+	fmt.Printf(&quot;%08b\n&quot;, status) //00000000
+	status = ModifyStatus(status, 3, true)
+	fmt.Printf(&quot;%08b\n&quot;, status) //00001000
+	status = ModifyStatus(status, 3, false)
+	fmt.Printf(&quot;%08b\n&quot;, status) //00000000
+}
+</code></pre>
+<pre><code class="language-plain_text">00000000
+00000001
+00000000
+00001000
+00000000
+</code></pre>
+<h2><a id="%E5%88%A4%E6%96%AD%E6%9F%90%E4%B8%80%E4%BD%8D%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%BD%8D%E4%BD%BF%E7%94%A8%E4%B8%BA1%E6%88%960" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>判断某一位二进制位使用为1或0</h2>
+<pre><code class="language-go">func CheckStatus(status int, indexOf int, to bool) bool{
+	if to{
+		return status | (1 &lt;&lt; indexOf) == status
+	}else{
+		return status &amp;^ (1 &lt;&lt; indexOf) == status
+	}
+}
+</code></pre>
+<h3><a id="%E6%B5%8B%E8%AF%95%E6%A0%B7%E4%BE%8B" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>测试样例</h3>
+<pre><code class="language-go">func main() {
+	status := 119
+	fmt.Printf(&quot;%08b\n&quot;, status) //01110111
+	fmt.Println(CheckStatus(status, 3,false)) // true
+	fmt.Println(CheckStatus(status, 1,true)) // true
+	fmt.Println(CheckStatus(status, 1,false)) // false
+}
+</code></pre>
+<pre><code class="language-plain_text">01110111
+true
+true
+false
+</code></pre>
 
 
     
@@ -172,13 +225,13 @@
         <div class="large-6 columns">
         <p class="text-left" style="padding:15px 0px;">
       
-          <a href="study.html" 
-          title="Previous Post: 学习日志">&laquo; 学习日志</a>
-      
         </p>
         </div>
         <div class="large-6 columns">
       <p class="text-right" style="padding:15px 0px;">
+      
+          <a  href="study.html" 
+          title="Next Post: 学习日志">学习日志 &raquo;</a>
       
       </p>
         </div>
@@ -307,6 +360,8 @@ Theme used <a target="_blank" href="http://github.com">GitHub CSS</a>.</p>
 
 
 
+
+<script src="asset/prism.js"></script>
 
 
 <style type="text/css">
