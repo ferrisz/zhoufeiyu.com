@@ -4,7 +4,7 @@
   <title><![CDATA[飞宇的博客]]></title>
   <link href="https://zhoufeiyu.com/atom.xml" rel="self"/>
   <link href="https://zhoufeiyu.com/"/>
-  <updated>2021-09-23T18:02:47+08:00</updated>
+  <updated>2021-09-23T22:14:58+08:00</updated>
   <id>https://zhoufeiyu.com/</id>
   <author>
     <name><![CDATA[]]></name>
@@ -81,6 +81,19 @@ true
 true
 false
 </code></pre>
+<h2><a id="%E4%BD%BF%E7%94%A8%E4%BA%8C%E8%BF%9B%E5%88%B6%E4%BD%8D%E4%BC%98%E5%85%88%E7%BA%A7%E6%A0%87%E8%AE%B0%E6%9D%83%E9%99%90" class="anchor" aria-hidden="true"><span class="octicon octicon-link"></span></a>使用二进制位优先级标记权限</h2>
+<p>假设使用8位二进制数表示状态，其中3位为权限标记位，使用最高3位来表示，优先级越高位越高。依次为账号是否可用，账号是否为标准用户态，账号是否为管理员</p>
+<pre><code class="language-plain_text">0xxxxxxx 账号被禁用
+1xxxxxxx 账号为非标准用户
+11xxxxxx 账号为标准用户
+111xxxxx 账号为管理员
+</code></pre>
+<p>判断账号是否可用仅需判断status &gt;= 128</p>
+<p>判断账号是否为标准用户判断status &gt;= 192</p>
+<p>判断账号是否为管理员判断status &gt;= 224</p>
+<p>无需关心其他状态位</p>
+<p>三个状态为将用户权限划分为4个区间<br />
+管理员 标准用户 非标准用户 禁用用户</p>
 
 ]]></content>
   </entry>
